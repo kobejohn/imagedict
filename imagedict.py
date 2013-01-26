@@ -131,7 +131,6 @@ class ImageDict(object):
                 return
         raise KeyError('The provided key was not found.')
 
-    #todo: override update
     def _fingerprint(self, image, mask):
         """Return the image descriptors and keypoints."""
         image_gray = self._get_grayscale(image)

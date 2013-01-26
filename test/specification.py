@@ -146,7 +146,7 @@ class User_Deletes_An_Item(ut.TestCase):
         #confirm that deleting the same image with a different mask raises KeyError
         self.assertRaises(KeyError, d.__delitem__, (key, None))
 
-#todo: change everything from key to object or key_image
+
 class ImageDict_Has_Whitelist_Of_Allowed_Image_Types(ut.TestCase):
     def test_opencv_numpy_images_are_on_the_whitelist_of_types(self):
         color_image = cv2.imread(path.join(_this_path, 'data', 'key.png'))
@@ -156,7 +156,7 @@ class ImageDict_Has_Whitelist_Of_Allowed_Image_Types(ut.TestCase):
         self.assertTrue(d._is_on_whitelist(gray_image))
 
 
-class ImageDict_Responds_To_Basic_Container_Requirements(ut.TestCase):
+class ImageDict_Implements_Container_len_Requirement(ut.TestCase):
     def test_length_of_a_new_dict_is_zero(self):
         d = ImageDict()
         self.assertEqual(len(d), 0)
@@ -171,15 +171,18 @@ class ImageDict_Responds_To_Basic_Container_Requirements(ut.TestCase):
 
 
 
-#todo: specify a get_with_confirmation_image  (same as get but returns tuple of value and image)
 
 
 
+#todo: change everything from key to object or key_image
+
+#todo: override update
+#D.update(E, **F) -> None. Update D from dict/iterable E and F.
+#If E has a .keys() method, does: for k in E: D[k] = E[k]
+#If E lacks .keys() method, does: for (k, v) in E: D[k] = v
+#In either case, this is followed by: for k in F: D[k] = F[k]
 
 
-
-#__len__(	self)
-#Called to implement the built-in function len(). Should return the length of the object, an integer >= 0. Also, an object that doesn't define a __nonzero__() method and whose __len__() method returns zero is considered to be false in a Boolean context.
 
 #__delitem__(	self, key)
 #Called to implement deletion of self[key]. Same note as for __getitem__(). This should only be implemented for mappings if the objects support removal of keys, or for sequences if elements can be removed from the sequence. The same exceptions should be raised for improper key values as for the __getitem__() method.
@@ -215,41 +218,5 @@ class ImageDict_Responds_To_Basic_Container_Requirements(ut.TestCase):
 #__str__
 #__repr__
 
+#todo: specify a get_with_confirmation_image  (same as get but returns tuple of value and image)
 
-
-
-
-
-
-
-
-
-##some extra imports just for loading an image
-#from StringIO import StringIO
-#import urllib
-#import cv2
-#numpy
-#
-#from imagedict import ImageDict
-#
-##some images to use (url load by evanchin: http://stackoverflow.com/a/13329446/377366 )
-#def cvimage_from_url(url, cv2_img_flag=0):
-#    request = urlopen(url)
-#    img_array = np.asarray(bytearray(request.read()), dtype=np.uint8)
-#    return cv2.imdecode(img_array, cv2_img_flag)
-#google_standard = cvimage_from_url('https://www.google.com/images/srpr/logo3w.png')
-#bing_standard = cvimage_from_url('http://0.tqn.com/d/websearch/1/5/o/q/bing-logo.png')
-#google_lookup = cvimage_from_url('http://mexico.cnn.com/media/2012/11/22/google-buscador-archivo.jpg')
-#
-##populate an ImageDict
-#imagedict = ImageDict()
-#imagedict[google_standard] = 'that's an image of the google logo'
-#imagedict[bing_standard] = 'that's an image of the bing logo'
-#
-##look up a scaled, partial, rotated (in 2 axes), out of focus google logo
-#imagedict[google_lookup]
-##hopefully that identified this image as the google logo!
-
-
-if __name__ == '__main__':
-    ut.main()
