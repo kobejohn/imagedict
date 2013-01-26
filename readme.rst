@@ -50,7 +50,7 @@ there are a few things you can do to make this work well.
 - Lookup Images: Loosely cropped
 - All Images: Provide a mask over non-relevant sections if possible
 - All Images: The key image and the object in the lookup image will match
-more easily if they are similar resolutions
+  more easily if they are similar resolutions
 
 
 Copyright
