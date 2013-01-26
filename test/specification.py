@@ -10,146 +10,135 @@ _this_path = path.abspath(path.split(__file__)[0])
 
 
 class User_Sets_A_New_Item(ut.TestCase):
-    def test_key_for_a_new_item_is_an_image(self):
-        key_image = cv2.imread(path.join(_this_path, 'data', 'key.png'))
+    def test_setting_a_new_image_creates_a_new_item(self):
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
         d = ImageDict()
-        d[key_image] = 1 #pass if no exception raised
+        d[obj] = 1 #pass if no exception raised
 
-    def test_setting_keys_that_are_not_on_the_whitelist_of_types_causes_TypeError(self):
+    def test_user_isolates_important_parts_of_an_image_with_a_mask(self):
         d = ImageDict()
-        invalid_key = 1
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        mask = cv2.imread(path.join(_this_path, 'data', 'object_mask.png'))
+        d[obj, mask] = 1 #pass if no problems
+
+    def test_setting_an_image_that_is_not_on_the_whitelist_of_types_causes_TypeError(self):
+        d = ImageDict()
+        invalid_obj = 1
         some_value = None
-        self.assertRaises(TypeError, d.__setitem__, invalid_key, some_value)
+        self.assertRaises(TypeError, d.__setitem__, invalid_obj, some_value)
+
+    def test_setting_a_mask_that_is_not_on_the_whitelist_of_types_causes_TypeError(self):
+        d = ImageDict()
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        invalid_mask = 1
+        some_value = None
+        self.assertRaises(TypeError, d.__setitem__, (obj, invalid_mask), some_value)
+
+    def test_setting_a_mask_causes_ValueError_if_not_the_same_size_as_the_main_image(self):
+        d = ImageDict()
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        bad_mask = cv2.imread(path.join(_this_path, 'data', 'object_bad_mask.png'))
+        some_value = None
+        self.assertRaises(ValueError, d.__setitem__, (obj, bad_mask), some_value)
 
 
 class User_Sets_An_Existing_Item(ut.TestCase):
-    def test_user_overrides_existing_key_by_setting_exactly_same_image(self):
-        d = ImageDict()
-        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        first_value = 1
-        second_value = 2
-        d[key] = first_value
-        #override the existing key
-        d[key] = second_value
-        #confirm that there is still only one key
-        self.assertEqual(len(d), 1)
-        #confirm that the key is associated with the new value
-        self.assertEqual(d._keypackages[0].value, second_value)
-
-    def test_setting_the_same_image_with_a_different_mask_creates_a_new_item(self):
-        d = ImageDict()
-        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        mask1 = cv2.imread(path.join(_this_path, 'data', 'key_mask.png'))
-        mask2 = cv2.imread(path.join(_this_path, 'data', 'key_mask_inverted.png'))
-        first_value = 1
-        second_value = 2
-        d[key, mask1] = first_value
-        #set the same key with a new mask
-        d[key, mask2] = second_value
-        #confirm that there are now two items
-        self.assertEqual(len(d), 2)
-
     def test_setting_the_same_image_with_the_same_mask_overwrites_the_existing_item(self):
         d = ImageDict()
-        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        mask = cv2.imread(path.join(_this_path, 'data', 'key_mask.png'))
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        mask = cv2.imread(path.join(_this_path, 'data', 'object_mask.png'))
         first_value = 1
         second_value = 2
-        d[key, mask] = first_value
-        #set the same key with a new mask
-        d[key, mask] = second_value
+        d[obj, mask] = first_value
+        #set the same obj with a new mask
+        d[obj, mask] = second_value
         #confirm that there is only one item
         self.assertEqual(len(d), 1)
         #confirm the value was updated
         self.assertEqual(d._keypackages[0].value, second_value)
 
-
-class User_Can_Include_A_Mask_When_Setting_An_Item(ut.TestCase):
-    def test_user_isolates_important_parts_of_new_key_with_a_mask(self):
+    def test_setting_the_same_image_with_a_different_mask_creates_a_new_item(self):
         d = ImageDict()
-        image = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        mask = cv2.imread(path.join(_this_path, 'data', 'key_mask.png'))
-        d[image, mask] = 1 #pass if no problems
-
-    def test_setting_masks_that_are_not_on_the_whitelist_of_types_cause_TypeError(self):
-        d = ImageDict()
-        image = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        invalid_mask = 1
-        some_value = None
-        self.assertRaises(TypeError, d.__setitem__, (image, invalid_mask), some_value)
-
-    def test_new_key_mask_causes_ValueError_if_not_the_same_size_as_the_key_image(self):
-        d = ImageDict()
-        image = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        bad_mask = cv2.imread(path.join(_this_path, 'data', 'key_bad_mask.png'))
-        some_value = None
-        self.assertRaises(ValueError, d.__setitem__, (image, bad_mask), some_value)
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        mask1 = cv2.imread(path.join(_this_path, 'data', 'object_mask.png'))
+        mask2 = None
+        first_value = 1
+        second_value = 2
+        d[obj, mask1] = first_value
+        #set the same obj with a new mask
+        d[obj, mask2] = second_value
+        #confirm that there are now two items
+        self.assertEqual(len(d), 2)
 
 
 class User_Looks_Up_A_Value(ut.TestCase):
     def test_lookup_with_an_image_that_is_similar_to_one_of_the_keys_returns_that_keys_value(self):
         d = ImageDict()
-        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
         lookup = cv2.imread(path.join(_this_path, 'data', 'lookup.png'))
         some_value = 1
-        d[key] = some_value
+        d[obj] = some_value
         #use the same image in a lookup
         self.assertEqual(d[lookup], some_value)
 
-    def test_KeyError_for_lookup_with_an_image_that_matches_no_keys(self):
-        d = ImageDict()
-        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        different_lookup = cv2.imread(path.join(_this_path, 'data', 'different_key.png'))
-        d[key] = None
-        self.assertRaises(KeyError, d.__getitem__, different_lookup)
-
-
-class User_Can_Include_A_Mask_When_Looking_Up_A_Key(ut.TestCase):
     def test_user_isolates_important_parts_of_lookup_with_a_mask(self):
         d = ImageDict()
-        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
         lookup = cv2.imread(path.join(_this_path, 'data', 'lookup.png'))
         lookup_mask = cv2.imread(path.join(_this_path, 'data', 'lookup_mask.png'))
-        d[key] = 1
+        d[obj] = 1
         x = d[lookup, lookup_mask] #pass if no problems
 
-    def test_using_lookup_masks_that_are_not_on_the_whitelist_of_types_causes_TypeError(self):
+    def test_KeyError_for_lookup_with_an_image_that_matches_no_keys(self):
         d = ImageDict()
-        image = cv2.imread(path.join(_this_path, 'data', 'lookup.png'))
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        different_lookup = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
+        d[obj] = None
+        self.assertRaises(KeyError, d.__getitem__, different_lookup)
+
+    def test_using_a_lookup_image_that_is_not_on_the_whitelist_of_types_causes_TypeError(self):
+        d = ImageDict()
+        invalid_lookup = 1
+        self.assertRaises(TypeError, d.__getitem__, invalid_lookup)
+
+    def test_using_a_lookup_mask_that_is_not_on_the_whitelist_of_types_causes_TypeError(self):
+        d = ImageDict()
+        lookup = cv2.imread(path.join(_this_path, 'data', 'lookup.png'))
         invalid_mask = 1
-        self.assertRaises(TypeError, d.__getitem__, (image, invalid_mask))
+        self.assertRaises(TypeError, d.__getitem__, (lookup, invalid_mask))
 
     def test_lookup_mask_causes_ValueError_if_not_the_same_size_as_the_lookup_image(self):
         d = ImageDict()
-        image = cv2.imread(path.join(_this_path, 'data', 'lookup.png'))
+        lookup = cv2.imread(path.join(_this_path, 'data', 'lookup.png'))
         bad_mask = cv2.imread(path.join(_this_path, 'data', 'lookup_bad_mask.png'))
-        self.assertRaises(ValueError, d.__getitem__, (image, bad_mask))
+        self.assertRaises(ValueError, d.__getitem__, (lookup, bad_mask))
+
+
 
 
 class User_Deletes_An_Item(ut.TestCase):
     def test_user_deletes_an_existing_item_by_providing_the_same_image_and_mask(self):
         d = ImageDict()
-        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        mask = cv2.imread(path.join(_this_path, 'data', 'key_mask.png'))
-        d[key, mask] = 1
-        #delete the existing key + mask combination
-        del(d[key, mask])
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        mask = cv2.imread(path.join(_this_path, 'data', 'object_mask.png'))
+        d[obj, mask] = 1
+        #delete the existing object + mask combination
+        del(d[obj, mask])
         #confirm that there are zero keys after deleting the only key
         self.assertEqual(len(d), 0)
 
     def test_user_gets_a_KeyError_when_deleting_a_non_existent_image_and_mask_combination(self):
         d = ImageDict()
-        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        key2 = cv2.imread(path.join(_this_path, 'data', 'different_key'))
-        mask = cv2.imread(path.join(_this_path, 'data', 'key_mask.png'))
-        d[key, mask] = 1
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        mask = cv2.imread(path.join(_this_path, 'data', 'object_mask.png'))
+        d[obj1, mask] = 1
         #confirm that deleting the same image with a different mask raises KeyError
-        self.assertRaises(KeyError, d.__delitem__, (key, None))
+        self.assertRaises(KeyError, d.__delitem__, (obj1, None))
 
 
 class ImageDict_Has_Whitelist_Of_Allowed_Image_Types(ut.TestCase):
     def test_opencv_numpy_images_are_on_the_whitelist_of_types(self):
-        color_image = cv2.imread(path.join(_this_path, 'data', 'key.png'))
+        color_image = cv2.imread(path.join(_this_path, 'data', 'object.png'))
         gray_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
         d = ImageDict()
         self.assertTrue(d._is_on_whitelist(color_image))
@@ -162,19 +151,17 @@ class ImageDict_Implements_Container_len_Requirement(ut.TestCase):
         self.assertEqual(len(d), 0)
 
     def test_length_of_a_dict_with_x_keys_is_x(self):
-        i1 = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        i2 = cv2.imread(path.join(_this_path, 'data', 'different_key.png'))
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        obj2 = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
         d = ImageDict()
-        d[i1] = 1
-        d[i2] = 2
+        d[obj1] = 1
+        d[obj2] = 2
         self.assertEqual(len(d), 2)
 
 
 
 
 
-
-#todo: change everything from key to object or key_image
 
 #todo: override update
 #D.update(E, **F) -> None. Update D from dict/iterable E and F.
