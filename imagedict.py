@@ -46,9 +46,13 @@ class ImageDict(object):
         self._validate_image_and_mask(image, mask)
         #if everything is ok, then create and store the package
         fingerprint = self._fingerprint(image, mask)
-        keypackage = self._KeyPackage(image, mask, fingerprint, value)
-        #todo: here is the place to search for presence of image (not mask) for overwriting
-        self._keypackages.append(keypackage)
+        new_keypackage = self._KeyPackage(image, mask, fingerprint, value)
+        #overwrite any existing key with the same image (doesn't care about mask)
+        for i, existing_kp in enumerate(self._keypackages):
+            if np.all(image == existing_kp.image):
+                self._keypackages[i] = new_keypackage
+                return #finished if a key is overwritten
+        self._keypackages.append(new_keypackage)
 
     def __getitem__(self, key):
         """Get the value for the given key or raise KeyError if not found.

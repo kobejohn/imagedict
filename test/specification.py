@@ -33,11 +33,23 @@ class User_Sets_An_Existing_Item(ut.TestCase):
         d[key] = second_value
         #confirm that there is still only one key
         self.assertEqual(len(d), 1)
+        #confirm that the key is associated with the new value
+        self.assertEqual(d._keypackages[0].value, second_value)
 
-    @ut.skip
     def test_user_overrides_existing_key_with_same_image_even_with_different_mask(self):
-        raise NotImplementedError
-
+        d = ImageDict()
+        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
+        mask1 = cv2.imread(path.join(_this_path, 'data', 'key_mask.png'))
+        mask2 = cv2.imread(path.join(_this_path, 'data', 'key_mask_inverted.png'))
+        first_value = 1
+        second_value = 2
+        d[key, mask1] = first_value
+        #override the existing key with a new mask (should be ignored)
+        d[key, mask2] = second_value
+        #confirm that there is still only one key
+        self.assertEqual(len(d), 1)
+        #confirm that the key is associated with the new value
+        self.assertEqual(d._keypackages[0].value, second_value)
 
 
 class User_Can_Include_A_Mask_When_Setting_An_Item(ut.TestCase):
