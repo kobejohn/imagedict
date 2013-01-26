@@ -24,6 +24,9 @@ class ImageDict(object):
         self._extractor = cv2.DescriptorExtractor_create('BRISK')
         self._matcher = cv2.BFMatcher(cv2.NORM_L2SQR)
 
+    def __len__(self):
+        return len(self._keypackages)
+
     def get(self, key, default = None):
         raise NotImplementedError
 

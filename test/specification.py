@@ -75,7 +75,7 @@ class User_Looks_Up_A_Value(ut.TestCase):
     def test_KeyError_for_lookup_with_an_image_that_matches_no_keys(self):
         d = ImageDict()
         key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
-        different_lookup = cv2.imread(path.join(_this_path, 'data', 'different_lookup.png'))
+        different_lookup = cv2.imread(path.join(_this_path, 'data', 'different_key.png'))
         d[key] = None
         self.assertRaises(KeyError, d.__getitem__, different_lookup)
 
@@ -109,6 +109,20 @@ class ImageDict_Has_Whitelist_Of_Allowed_Image_Types(ut.TestCase):
         d = ImageDict()
         self.assertTrue(d._is_on_whitelist(color_image))
         self.assertTrue(d._is_on_whitelist(gray_image))
+
+
+class ImageDict_Responds_To_Basic_Container_Requirements(ut.TestCase):
+    def test_length_of_a_new_dict_is_zero(self):
+        d = ImageDict()
+        self.assertEqual(len(d), 0)
+
+    def test_length_of_a_dict_with_x_keys_is_x(self):
+        i1 = cv2.imread(path.join(_this_path, 'data', 'key.png'))
+        i2 = cv2.imread(path.join(_this_path, 'data', 'different_key.png'))
+        d = ImageDict()
+        d[i1] = 1
+        d[i2] = 2
+        self.assertEqual(len(d), 2)
 
 
 
