@@ -47,9 +47,11 @@ class ImageDict(object):
         #if everything is ok, then create and store the package
         fingerprint = self._fingerprint(image, mask)
         new_keypackage = self._KeyPackage(image, mask, fingerprint, value)
-        #overwrite any existing key with the same image (doesn't care about mask)
+        #overwrite the key if it exists
         for i, existing_kp in enumerate(self._keypackages):
-            if np.all(image == existing_kp.image):
+            same_image = np.all(image == existing_kp.image)
+            same_mask = np.all(mask == existing_kp.mask)
+            if  same_image and same_mask:
                 self._keypackages[i] = new_keypackage
                 return #finished if a key is overwritten
         self._keypackages.append(new_keypackage)

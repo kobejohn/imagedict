@@ -36,7 +36,7 @@ class User_Sets_An_Existing_Item(ut.TestCase):
         #confirm that the key is associated with the new value
         self.assertEqual(d._keypackages[0].value, second_value)
 
-    def test_user_overrides_existing_key_with_same_image_even_with_different_mask(self):
+    def test_setting_the_same_image_with_a_different_mask_creates_a_new_item(self):
         d = ImageDict()
         key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
         mask1 = cv2.imread(path.join(_this_path, 'data', 'key_mask.png'))
@@ -44,11 +44,23 @@ class User_Sets_An_Existing_Item(ut.TestCase):
         first_value = 1
         second_value = 2
         d[key, mask1] = first_value
-        #override the existing key with a new mask (should be ignored)
+        #set the same key with a new mask
         d[key, mask2] = second_value
-        #confirm that there is still only one key
+        #confirm that there are now two items
+        self.assertEqual(len(d), 2)
+
+    def test_setting_the_same_image_with_the_same_mask_overwrites_the_existing_item(self):
+        d = ImageDict()
+        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
+        mask = cv2.imread(path.join(_this_path, 'data', 'key_mask.png'))
+        first_value = 1
+        second_value = 2
+        d[key, mask] = first_value
+        #set the same key with a new mask
+        d[key, mask] = second_value
+        #confirm that there is only one item
         self.assertEqual(len(d), 1)
-        #confirm that the key is associated with the new value
+        #confirm the value was updated
         self.assertEqual(d._keypackages[0].value, second_value)
 
 
