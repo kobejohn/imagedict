@@ -1,5 +1,7 @@
 Quick Usage
 ===========
+::
+
     #some extra imports just for loading an image
     from StringIO import StringIO
     import urllib2
