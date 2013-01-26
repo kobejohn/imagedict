@@ -118,6 +118,20 @@ class ImageDict(object):
             raise KeyError('No good match found.')
         return best_kp.value
 
+    def __delitem__(self, key):
+        """Delete the provided key. Raise KeyError if it doesn't exist."""
+        image, mask = self._parse_key_arg(key)
+        self._validate_image_and_mask(image, mask)
+        #find and delete the key
+        for i, existing_kp in enumerate(self._keypackages):
+            same_image = np.all(image == existing_kp.image)
+            same_mask = np.all(mask == existing_kp.mask)
+            if  same_image and same_mask:
+                del(self._keypackages[i])
+                return
+        raise KeyError('The provided key was not found.')
+
+    #todo: override update
     def _fingerprint(self, image, mask):
         """Return the image descriptors and keypoints."""
         image_gray = self._get_grayscale(image)

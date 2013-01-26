@@ -126,6 +126,27 @@ class User_Can_Include_A_Mask_When_Looking_Up_A_Key(ut.TestCase):
         self.assertRaises(ValueError, d.__getitem__, (image, bad_mask))
 
 
+class User_Deletes_An_Item(ut.TestCase):
+    def test_user_deletes_an_existing_item_by_providing_the_same_image_and_mask(self):
+        d = ImageDict()
+        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
+        mask = cv2.imread(path.join(_this_path, 'data', 'key_mask.png'))
+        d[key, mask] = 1
+        #delete the existing key + mask combination
+        del(d[key, mask])
+        #confirm that there are zero keys after deleting the only key
+        self.assertEqual(len(d), 0)
+
+    def test_user_gets_a_KeyError_when_deleting_a_non_existent_image_and_mask_combination(self):
+        d = ImageDict()
+        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
+        key2 = cv2.imread(path.join(_this_path, 'data', 'different_key'))
+        mask = cv2.imread(path.join(_this_path, 'data', 'key_mask.png'))
+        d[key, mask] = 1
+        #confirm that deleting the same image with a different mask raises KeyError
+        self.assertRaises(KeyError, d.__delitem__, (key, None))
+
+#todo: change everything from key to object or key_image
 class ImageDict_Has_Whitelist_Of_Allowed_Image_Types(ut.TestCase):
     def test_opencv_numpy_images_are_on_the_whitelist_of_types(self):
         color_image = cv2.imread(path.join(_this_path, 'data', 'key.png'))
