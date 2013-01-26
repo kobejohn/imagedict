@@ -21,11 +21,23 @@ class User_Sets_A_New_Item(ut.TestCase):
         some_value = None
         self.assertRaises(TypeError, d.__setitem__, invalid_key, some_value)
 
-#todo:
-@ut.skip
+
 class User_Sets_An_Existing_Item(ut.TestCase):
-    def test_XYZ(self):
+    def test_user_overrides_existing_key_by_setting_exactly_same_image(self):
+        d = ImageDict()
+        key = cv2.imread(path.join(_this_path, 'data', 'key.png'))
+        first_value = 1
+        second_value = 2
+        d[key] = first_value
+        #override the existing key
+        d[key] = second_value
+        #confirm that there is still only one key
+        self.assertEqual(len(d), 1)
+
+    @ut.skip
+    def test_user_overrides_existing_key_with_same_image_even_with_different_mask(self):
         raise NotImplementedError
+
 
 
 class User_Can_Include_A_Mask_When_Setting_An_Item(ut.TestCase):
