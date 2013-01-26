@@ -1,2 +1,0 @@
-include *.rst LICENSE run_tests.py
-recursive-include test *.py
