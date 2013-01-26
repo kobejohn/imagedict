@@ -19,12 +19,12 @@ Quick Usage
     google_lookup = cvimage_from_url('http://www.brandingmagazine.com/wp-content/uploads/2011/11/Evolution-logo.jpg')
 
     #populate an ImageDict
-    imagedict = ImageDict()
-    imagedict[google_standard] = 'looks like google'
-    imagedict[bing_standard] = 'looks like bing'
+    d = ImageDict()
+    d[google_standard] = 'looks like google'
+    d[bing_standard] = 'looks like bing'
 
-    #look up a scaled, partial, rotated (in 2 axes), out of focus google logo
-    imagedict[google_lookup]
+    #look up another google logo
+    d[google_lookup]
     #hopefully that identified this image as the google logo!
 
 
@@ -34,6 +34,9 @@ ImageDict emulates the basic behavior of a dict but with images as keys.
 The idea is to take a lookup image, find the most similar key and return the
 value for that key. It can also reject an input image as too dissimilar and
 raise a KeyError.
+
+Both setting and looking up keys can be done with optional masks that isolate
+the important parts of each image.
 
 
 Usage Guidelines
