@@ -131,6 +131,27 @@ class ImageDict(object):
                 return
         raise KeyError('The provided key was not found.')
 
+    def __iter__(self):
+        """Provide an iterator over the keys."""
+        for kp in self._keypackages:
+            yield (kp.image, kp.mask)
+
+    def iterkeys(self):
+        return self.__iter__()
+
+    def __contains__(self, key):
+        """Return True if the image, mask combination is present."""
+        image, mask = self._parse_key_arg(key)
+        self._validate_image_and_mask(image, mask)
+        for kp in self._keypackages:
+            same_image = np.all(image == kp.image)
+            same_mask = np.all(mask == kp.mask)
+            if  same_image and same_mask:
+                return True
+        return False
+
+
+
     def _fingerprint(self, image, mask):
         """Return the image descriptors and keypoints."""
         image_gray = self._get_grayscale(image)

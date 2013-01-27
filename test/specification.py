@@ -114,8 +114,6 @@ class User_Looks_Up_A_Value(ut.TestCase):
         self.assertRaises(ValueError, d.__getitem__, (lookup, bad_mask))
 
 
-
-
 class User_Deletes_An_Item(ut.TestCase):
     def test_user_deletes_an_existing_item_by_providing_the_same_image_and_mask(self):
         d = ImageDict()
@@ -145,7 +143,7 @@ class ImageDict_Has_Whitelist_Of_Allowed_Image_Types(ut.TestCase):
         self.assertTrue(d._is_on_whitelist(gray_image))
 
 
-class ImageDict_Implements_Container_len_Requirement(ut.TestCase):
+class ImageDict_Implements_Container_len(ut.TestCase):
     def test_length_of_a_new_dict_is_zero(self):
         d = ImageDict()
         self.assertEqual(len(d), 0)
@@ -159,28 +157,39 @@ class ImageDict_Implements_Container_len_Requirement(ut.TestCase):
         self.assertEqual(len(d), 2)
 
 
+class ImageDict_Implements_Container_iter_and_iterkeys(ut.TestCase):
+    def test_iterating_over_an_ImageDict_provides_a_generator_of_keys_as_image_mask_pairs(self):
+        d = ImageDict()
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        mask1 = cv2.imread(path.join(_this_path, 'data', 'object_mask.png'))
+        obj2 = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
+        d[obj1, mask1] = 1
+        d[obj2] = 2
+        keys_specification = [(obj1, mask1), (obj2, None)]
+        keys_by_iter = (key for key in d)
+        keys_by_iterkeys = (key for key in d.iterkeys())
+        self.assertItemsEqual(list(keys_by_iter), keys_specification)
+        self.assertItemsEqual(list(keys_by_iterkeys), keys_specification)
 
 
+class ImageDict_Implements_Container_contains(ut.TestCase):
+    def test_ImageDict_returns_true_if_key_exists(self):
+        d = ImageDict()
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        mask = cv2.imread(path.join(_this_path, 'data', 'object_mask.png'))
+        d[obj, mask] = 1
+        self.assertTrue(d.__contains__((obj, mask)))
+        self.assertTrue((obj, mask) in d)
 
+    def test_ImageDict_returns_false_if_key_doesnt_exist(self):
+        d = ImageDict()
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        mask = cv2.imread(path.join(_this_path, 'data', 'object_mask.png'))
+        obj2 = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
+        d[obj, mask] = 1
+        self.assertFalse(obj in d) #whole key is required, not only the image
+        self.assertFalse(obj2 in d) #totally absent key
 
-#todo: override update
-#D.update(E, **F) -> None. Update D from dict/iterable E and F.
-#If E has a .keys() method, does: for k in E: D[k] = E[k]
-#If E lacks .keys() method, does: for (k, v) in E: D[k] = v
-#In either case, this is followed by: for k in F: D[k] = F[k]
-
-
-
-#__delitem__(	self, key)
-#Called to implement deletion of self[key]. Same note as for __getitem__(). This should only be implemented for mappings if the objects support removal of keys, or for sequences if elements can be removed from the sequence. The same exceptions should be raised for improper key values as for the __getitem__() method.
-
-#__iter__(	self)
-#This method is called when an iterator is required for a container. This method should return a new iterator object that can iterate over all the objects in the container. For mappings, it should iterate over the keys of the container, and should also be made available as the method iterkeys().
-#Iterator objects also need to implement this method; they are required to return themselves. For more information on iterator objects, see ``Iterator Types'' in the Python Library Reference.
-
-#The membership test operators (in and not in) are normally implemented as an iteration through a sequence. However, container objects can supply the following special method with a more efficient implementation, which also does not require the object be a sequence.
-#__contains__(	self, item)
-#Called to implement membership test operators. Should return true if item is in self, false otherwise. For mapping objects, this should consider the keys of the mapping rather than the values or the key-item pairs.
 
 
 #It is also recommended that mappings provide the methods behaving similar to those for Python's standard dictionary objects.
@@ -207,3 +216,9 @@ class ImageDict_Implements_Container_len_Requirement(ut.TestCase):
 
 #todo: specify a get_with_confirmation_image  (same as get but returns tuple of value and image)
 
+
+#todo: override update
+#D.update(E, **F) -> None. Update D from dict/iterable E and F.
+#If E has a .keys() method, does: for k in E: D[k] = E[k]
+#If E lacks .keys() method, does: for (k, v) in E: D[k] = v
+#In either case, this is followed by: for k in F: D[k] = F[k]
