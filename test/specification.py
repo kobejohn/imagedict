@@ -237,10 +237,35 @@ class ImageDict_Implements_Container_contains(ut.TestCase):
         self.assertFalse(obj in d) #whole key is required, not only the image
         self.assertFalse(obj2 in d) #totally absent key
 
+
+class ImageDict_Implements_Container_clear(ut.TestCase):
+    def test_ImageDict_removes_all_items(self):
+        d = ImageDict()
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        d[obj] = 1
+        d.clear()
+        self.assertEqual(len(d), 0)
+
+
+class ImageDict_Implements_Container_setdefault(ut.TestCase):
+    def test_setdefault_with_an_existing_key_returns_the_existing_keys_value(self):
+        d = ImageDict()
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        original_value = 1
+        new_value = 2
+        d[obj] = 1
+        d.setdefault(obj, new_value)
+        self.assertEqual(d._keypackages[0].value, original_value)
+
+    def test_setdefault_with_a_key_that_doesnt_exist_sets_the_new_item_and_returns_the_new_value(self):
+        d = ImageDict()
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        new_value = 2
+        d.setdefault(obj, new_value)
+        self.assertEqual(d._keypackages[0].value, new_value)
+
+
 #It is also recommended that mappings provide the methods behaving similar to those for Python's standard dictionary objects.
-# get(),
-# clear(),
-# setdefault(),
 # pop(),
 # popitem(),
 # copy(),

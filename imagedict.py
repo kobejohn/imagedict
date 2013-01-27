@@ -27,9 +27,6 @@ class ImageDict(object):
     def __len__(self):
         return len(self._keypackages)
 
-    def get(self, key, default = None):
-        raise NotImplementedError
-
     def __setitem__(self, key, value):
         """Set the given key and value.
 
@@ -62,6 +59,20 @@ class ImageDict(object):
             return self.__getitem__(key)
         except KeyError:
             return d
+
+    def setdefault(self, key, d):
+        """D.setdefault(k,d) -> D.get(k,d), also set D[k]=d if k not in D
+
+        Due to the keys being images, the default is required as there is no
+        standard meaning for a default image.
+        """
+        try:
+            value = self.__getitem__(key)
+        except KeyError:
+            self.__setitem__(key, d)
+            value = d
+        return value
+
 
     def __getitem__(self, key):
         """Get the value for the given key or raise KeyError if not found.
@@ -176,6 +187,9 @@ class ImageDict(object):
 
     def has_key(self, key):
         return self.__contains__(key)
+
+    def clear(self):
+        self._keypackages = list()
 
     def _fingerprint(self, image, mask):
         """Return the image descriptors and keypoints."""
