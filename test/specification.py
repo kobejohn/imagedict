@@ -81,6 +81,17 @@ class User_Looks_Up_A_Value(ut.TestCase):
         #use the same image in a lookup
         self.assertEqual(d[lookup], some_value)
 
+    def test_lookup_with_get_method_has_optional_default(self):
+        d = ImageDict()
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        obj2 = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
+        lookup = cv2.imread(path.join(_this_path, 'data', 'lookup.png'))
+        some_value = 1
+        d[obj1] = some_value
+        #use the same image in a lookup
+        self.assertEqual(d.get(lookup), some_value)
+        self.assertEqual(d.get(obj2, None), None)
+
     def test_user_isolates_important_parts_of_lookup_with_a_mask(self):
         d = ImageDict()
         obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
@@ -167,8 +178,8 @@ class ImageDict_Implements_Container_iter_and_iterkeys(ut.TestCase):
         d[obj2] = 2
         keys_specification = [(obj1, mask1), (obj2, None)]
         keys_by_iter = (key for key in d)
-        keys_by_iterkeys = (key for key in d.iterkeys())
-        keys_by_keys = (key for key in d.keys())
+        keys_by_iterkeys = d.iterkeys()
+        keys_by_keys = d.keys()
         self.assertItemsEqual(list(keys_by_iter), keys_specification)
         self.assertItemsEqual(list(keys_by_iterkeys), keys_specification)
         self.assertItemsEqual(keys_by_keys, keys_specification)
@@ -186,6 +197,25 @@ class ImageDict_Implements_Container_values(ut.TestCase):
         values_by_values = d.values()
         self.assertItemsEqual(list(values_by_itervalues), values_specification)
         self.assertItemsEqual(values_by_values, values_specification)
+
+
+class ImageDict_Implements_Container_iteritems_and_items(ut.TestCase):
+    def test_ImageDict_provides_key_value_pairs(self):
+        d = ImageDict()
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        mask1 = cv2.imread(path.join(_this_path, 'data', 'object_mask.png'))
+        obj2 = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
+        value_1 = 1
+        value_2 = 2
+        d[obj1, mask1] = value_1
+        d[obj2] = value_2
+        key1_spec = (obj1, mask1)
+        key2_spec = (obj2, None)
+        items_specification = ((key1_spec, value_1), (key2_spec, value_2))
+        items_by_iteritems = d.iteritems()
+        items_by_items = d.items()
+        self.assertItemsEqual(list(items_by_iteritems), items_specification)
+        self.assertItemsEqual(items_by_items, items_specification)
 
 
 class ImageDict_Implements_Container_contains(ut.TestCase):
@@ -208,8 +238,6 @@ class ImageDict_Implements_Container_contains(ut.TestCase):
         self.assertFalse(obj2 in d) #totally absent key
 
 #It is also recommended that mappings provide the methods behaving similar to those for Python's standard dictionary objects.
-# items(),
-# iteritems(),
 # get(),
 # clear(),
 # setdefault(),

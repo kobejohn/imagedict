@@ -56,6 +56,13 @@ class ImageDict(object):
                 return #finished if a key is overwritten
         self._keypackages.append(new_keypackage)
 
+    def get(self, key, d = None):
+        """Get the value for the given key or provide the default value."""
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return d
+
     def __getitem__(self, key):
         """Get the value for the given key or raise KeyError if not found.
 
@@ -148,6 +155,13 @@ class ImageDict(object):
 
     def values(self):
         return list(self.itervalues())
+
+    def iteritems(self):
+        for kp in self._keypackages:
+            yield ((kp.image, kp.mask), kp.value)
+
+    def items(self):
+        return list(self.iteritems())
 
     def __contains__(self, key):
         """Return True if the image, mask combination is present."""
