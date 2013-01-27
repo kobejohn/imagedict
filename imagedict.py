@@ -139,6 +139,16 @@ class ImageDict(object):
     def iterkeys(self):
         return self.__iter__()
 
+    def keys(self):
+        return list(self.__iter__())
+
+    def itervalues(self):
+        for kp in self._keypackages:
+            yield kp.value
+
+    def values(self):
+        return list(self.itervalues())
+
     def __contains__(self, key):
         """Return True if the image, mask combination is present."""
         image, mask = self._parse_key_arg(key)
@@ -150,7 +160,8 @@ class ImageDict(object):
                 return True
         return False
 
-
+    def has_key(self, key):
+        return self.__contains__(key)
 
     def _fingerprint(self, image, mask):
         """Return the image descriptors and keypoints."""

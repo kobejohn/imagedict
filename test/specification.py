@@ -168,8 +168,24 @@ class ImageDict_Implements_Container_iter_and_iterkeys(ut.TestCase):
         keys_specification = [(obj1, mask1), (obj2, None)]
         keys_by_iter = (key for key in d)
         keys_by_iterkeys = (key for key in d.iterkeys())
+        keys_by_keys = (key for key in d.keys())
         self.assertItemsEqual(list(keys_by_iter), keys_specification)
         self.assertItemsEqual(list(keys_by_iterkeys), keys_specification)
+        self.assertItemsEqual(keys_by_keys, keys_specification)
+
+
+class ImageDict_Implements_Container_values(ut.TestCase):
+    def test_ImageDict_provides_values_of_each_key_value_pair(self):
+        d = ImageDict()
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        obj2 = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
+        d[obj1] = 1
+        d[obj2] = 2
+        values_specification = (1, 2)
+        values_by_itervalues = d.itervalues()
+        values_by_values = d.values()
+        self.assertItemsEqual(list(values_by_itervalues), values_specification)
+        self.assertItemsEqual(values_by_values, values_specification)
 
 
 class ImageDict_Implements_Container_contains(ut.TestCase):
@@ -180,6 +196,7 @@ class ImageDict_Implements_Container_contains(ut.TestCase):
         d[obj, mask] = 1
         self.assertTrue(d.__contains__((obj, mask)))
         self.assertTrue((obj, mask) in d)
+        self.assertTrue(d.has_key((obj, mask)))
 
     def test_ImageDict_returns_false_if_key_doesnt_exist(self):
         d = ImageDict()
@@ -190,20 +207,12 @@ class ImageDict_Implements_Container_contains(ut.TestCase):
         self.assertFalse(obj in d) #whole key is required, not only the image
         self.assertFalse(obj2 in d) #totally absent key
 
-
-
 #It is also recommended that mappings provide the methods behaving similar to those for Python's standard dictionary objects.
-# base these on the above parts, especial get set keys
-# keys(),
-# values(),
 # items(),
-# has_key(),
+# iteritems(),
 # get(),
 # clear(),
 # setdefault(),
-# iterkeys(),
-# itervalues(),
-# iteritems(),
 # pop(),
 # popitem(),
 # copy(),
