@@ -253,7 +253,7 @@ class ImageDict_Implements_Container_setdefault(ut.TestCase):
         obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
         original_value = 1
         new_value = 2
-        d[obj] = 1
+        d[obj] = original_value
         d.setdefault(obj, new_value)
         self.assertEqual(d._keypackages[0].value, original_value)
 
@@ -265,9 +265,45 @@ class ImageDict_Implements_Container_setdefault(ut.TestCase):
         self.assertEqual(d._keypackages[0].value, new_value)
 
 
+class ImageDict_Implements_Container_pop_and_popitem(ut.TestCase):
+    def test_pop_removes_the_provided_key_when_it_exists_and_returns_its_value(self):
+        d = ImageDict()
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        value_1 = 1
+        d[obj1] = value_1
+        popped_value = d.pop(obj1)
+        self.assertEqual(popped_value, value_1)
+        self.assertEqual(len(d), 0) #should be empty after pop
+
+    def test_pop_does_nothing_and_returns_the_provided_default_value_when_provided_key_doesnt_exist(self):
+        d = ImageDict()
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        default_value = 1
+        popped_value = d.pop(obj1, default_value) #pop a non-existent key
+        self.assertEqual(popped_value, default_value)
+        self.assertEqual(len(d), 0) #should still be empty
+
+    def test_pop_raises_KeyError_when_provided_key_doesnt_exist_and_no_default_value_was_provided(self):
+        d = ImageDict()
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        self.assertRaises(KeyError, d.pop, obj1)
+
+    def test_popitem_removes_some_item_and_returns_it_as_a_key_value_pair(self):
+        d = ImageDict()
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        value_1 = 1
+        d[obj1] = value_1
+        item_specification = ((obj1, None), value_1)
+        popped_item = d.popitem()
+        self.assertEqual(popped_item, item_specification)
+        self.assertEqual(len(d), 0) #item should have been removed
+
+    def test_popitem_raises_KeyError_when_ImageDict_is_empty(self):
+        d = ImageDict()
+        self.assertRaises(KeyError, d.popitem)
+
+
 #It is also recommended that mappings provide the methods behaving similar to those for Python's standard dictionary objects.
-# pop(),
-# popitem(),
 # copy(),
 # update()
 

@@ -135,8 +135,13 @@ class ImageDict(object):
             raise KeyError('No good match found.')
         return best_kp.value
 
-    def __delitem__(self, key):
+    def __delitem__(self, key, index = None):
         """Delete the provided key. Raise KeyError if it doesn't exist."""
+        #internal shortcut if index known:
+        if index is not None:
+            del(self._keypackages[index])
+            return
+        #normal path
         image, mask = self._parse_key_arg(key)
         self._validate_image_and_mask(image, mask)
         #find and delete the key
@@ -171,6 +176,40 @@ class ImageDict(object):
 
     def items(self):
         return list(self.iteritems())
+
+    #todo: how does a standard dict differentiate between d=None and not providing d? method signature says d=None
+    def pop(self, key, d = 987654321):
+        """D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+        If key is not found, d is returned if given, otherwise KeyError is raised.
+
+        """
+        image, mask = self._parse_key_arg(key)
+        self._validate_image_and_mask(image, mask)
+        try:
+            i = self._index_of_key_in_keypackages(image, mask)
+            value = self._keypackages[i].value
+            self.__delitem__(key, index = i)
+            return value
+        except KeyError:
+            pass
+        if d == 987654321:
+            raise KeyError('Key not found in dictionary.')
+        else:
+            return d
+
+    def popitem(self):
+        """D.popitem() -> (k, v), remove and return some (key, value) pair as a
+        2-tuple; but raise KeyError if D is empty.
+
+        """
+        index = 0
+        try:
+            kp = self._keypackages[index]
+        except IndexError:
+            raise KeyError('Tried to popitem but the dict is empty.')
+        item = ((kp.image, kp.mask), kp.value)
+        self.__delitem__(None, index)
+        return item
 
     def __contains__(self, key):
         """Return True if the image, mask combination is present."""
