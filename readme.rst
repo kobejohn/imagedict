@@ -40,6 +40,11 @@ raise a KeyError.
 Both setting and looking up keys can be done with optional masks that isolate
 the important parts of each image.
 
+On the technical side, this does not use template matching. Instead it uses
+a technique called feature detection and specifically a type of feature
+detection that is able to deal with some level of transformation between
+the lookup and the key (e.g. scale, rotation).
+
 
 Usage Guidelines
 ================
