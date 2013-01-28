@@ -45,13 +45,12 @@ class ImageDict(object):
         fingerprint = self._fingerprint(image, mask)
         new_keypackage = self._KeyPackage(image, mask, fingerprint, value)
         #overwrite the key if it exists
-        for i, existing_kp in enumerate(self._keypackages):
-            same_image = np.all(image == existing_kp.image)
-            same_mask = np.all(mask == existing_kp.mask)
-            if  same_image and same_mask:
-                self._keypackages[i] = new_keypackage
-                return #finished if a key is overwritten
-        self._keypackages.append(new_keypackage)
+        try:
+            i = self._index_of_key_in_keypackages(image, mask)
+            self._keypackages[i] = new_keypackage
+            return #finished if a key is overwritten
+        except KeyError:
+            self._keypackages.append(new_keypackage)
 
     def get(self, key, d = None):
         """Get the value for the given key or provide the default value."""
@@ -141,13 +140,12 @@ class ImageDict(object):
         image, mask = self._parse_key_arg(key)
         self._validate_image_and_mask(image, mask)
         #find and delete the key
-        for i, existing_kp in enumerate(self._keypackages):
-            same_image = np.all(image == existing_kp.image)
-            same_mask = np.all(mask == existing_kp.mask)
-            if  same_image and same_mask:
-                del(self._keypackages[i])
-                return
-        raise KeyError('The provided key was not found.')
+        try:
+            i = self._index_of_key_in_keypackages(image, mask)
+            del(self._keypackages[i])
+            return
+        except KeyError:
+            raise KeyError('The provided key was not found.')
 
     def __iter__(self):
         """Provide an iterator over the keys."""
@@ -178,18 +176,26 @@ class ImageDict(object):
         """Return True if the image, mask combination is present."""
         image, mask = self._parse_key_arg(key)
         self._validate_image_and_mask(image, mask)
-        for kp in self._keypackages:
-            same_image = np.all(image == kp.image)
-            same_mask = np.all(mask == kp.mask)
-            if  same_image and same_mask:
-                return True
-        return False
+        try:
+            index = self._index_of_key_in_keypackages(image, mask)
+            return True #if index exists, then contains is true
+        except KeyError:
+            return False
 
     def has_key(self, key):
         return self.__contains__(key)
 
     def clear(self):
         self._keypackages = list()
+
+    def _index_of_key_in_keypackages(self, image, mask):
+        """Find the index of the validated key or raise KeyError if not found."""
+        for i, kp in enumerate(self._keypackages):
+            same_image = np.all(image == kp.image)
+            same_mask = np.all(mask == kp.mask)
+            if  same_image and same_mask:
+                return i
+        raise KeyError('Key not found in dictionary.')
 
     def _fingerprint(self, image, mask):
         """Return the image descriptors and keypoints."""
