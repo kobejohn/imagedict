@@ -227,6 +227,12 @@ class ImageDict(object):
     def clear(self):
         self._keypackages = list()
 
+    def copy(self):
+        """Return a new ImageDict with the same items."""
+        d = self.__class__()
+        d._keypackages = list(self._keypackages)
+        return d
+
     def _index_of_key_in_keypackages(self, image, mask):
         """Find the index of the validated key or raise KeyError if not found."""
         for i, kp in enumerate(self._keypackages):

@@ -303,8 +303,24 @@ class ImageDict_Implements_Container_pop_and_popitem(ut.TestCase):
         self.assertRaises(KeyError, d.popitem)
 
 
+class ImageDict_Implements_Container_copy(ut.TestCase):
+    def test_copy_is_a_new_object(self):
+        d = ImageDict()
+        d_copy = d.copy()
+        self.assertIsNot(d_copy, d)
+
+    def test_a_copy_has_same_keypackages_as_original(self):
+        d = ImageDict()
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        value = 1
+        d[obj] = value
+        d_copy = d.copy()
+        self.assertEqual(d._keypackages, d_copy._keypackages)
+
+
+
+
 #It is also recommended that mappings provide the methods behaving similar to those for Python's standard dictionary objects.
-# copy(),
 # update()
 
 
