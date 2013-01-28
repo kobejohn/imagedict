@@ -233,6 +233,24 @@ class ImageDict(object):
         d._keypackages = list(self._keypackages)
         return d
 
+    def update(self, E, **F):
+        """D.update(E, **F) -> None. Update D from dict/iterable E and F.
+        If E has a .keys() method, does: for k in E: D[k] = E[k]
+        If E lacks .keys() method, does: for (k, v) in E: D[k] = v
+        In either case, this is followed by: for k in F: D[k] = F[k]
+
+        Note: This basically only works with mappables that can index an image
+
+        """
+        if hasattr(E, 'keys'):
+            for k in E:
+                self[k] = E[k]
+        else:
+            for (k, v) in E:
+                self[k] = v
+        for k in F:
+            self[k] = F[k]
+
     def _index_of_key_in_keypackages(self, image, mask):
         """Find the index of the validated key or raise KeyError if not found."""
         for i, kp in enumerate(self._keypackages):

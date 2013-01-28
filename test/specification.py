@@ -2,6 +2,7 @@ import unittest as ut
 from os import path
 
 import cv2
+import numpy as np
 
 from imagedict import ImageDict
 
@@ -318,10 +319,61 @@ class ImageDict_Implements_Container_copy(ut.TestCase):
         self.assertEqual(d._keypackages, d_copy._keypackages)
 
 
+class ImageDict_Implements_Container_update(ut.TestCase):
+    def test_arg_with_keys_sets_each_arg_item(self):
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        obj2 = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
+        value_1 = 1
+        value_2 = 2
+        d_content = ImageDict()
+        d_content[obj1] = value_1
+        d_content[obj2] = value_2
+        #create and try to update a blank ImageDict
+        d = ImageDict()
+        d.update(d_content)
+        image_mask_values = ((kp.image, kp.mask, kp.value) for kp in d._keypackages)
+        image_mask_values_spec = ((obj1, None, value_1), (obj2, None, value_2))
+        self.assertItemsEqual(image_mask_values, image_mask_values_spec)
 
+    def test_arg_without_keys_sets_sequence_of_key_value_pairs(self):
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        obj2 = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
+        value_1 = 1
+        value_2 = 2
+        key_value_pairs = ((obj1, value_1), (obj2, value_2))
+        #create and try to update a blank ImageDict
+        d = ImageDict()
+        d.update(key_value_pairs)
+        items = [[kp.image, kp.mask, kp.value] for kp in d._keypackages]
+        items_spec = ((obj1, None, value_1), (obj2, None, value_2))
+        #below works like assertSequenceEqual but gets around numpy's demand for unambiguous equality operator
+        #wish I could use ItemsEqual but I believe it has a problem even though it is supposed to have a non-hashable code path
+        for (image_actual, mask_actual, value_actual), (image_spec, mask_spec, value_spec) in zip(items, items_spec):
+            self.assertTrue(np.all(image_actual == image_spec))
+            self.assertTrue(np.all(mask_actual == mask_spec))
+            self.assertEqual(value_actual, value_spec)
 
-#It is also recommended that mappings provide the methods behaving similar to those for Python's standard dictionary objects.
-# update()
+    @ut.skip #read inside for hashing problem
+    def test_kwarg_sets_as_with_an_arg_with_keys(self):
+        obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        obj2 = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
+        value_1 = 1
+        value_2 = 2
+        d_content = ImageDict()
+        d_content[obj1] = value_1
+        d_content[obj2] = value_2
+        #create and try to update a blank ImageDict
+        d = ImageDict()
+        d.update(**d_content) #todo: this doesn't work. maybe can work around hash requirement?
+        items = ((kp.image, kp.mask, kp.value) for kp in d._keypackages)
+        items_spec = ((obj1, None, value_1), (obj2, None, value_2))
+        #below works like assertSequenceEqual but gets around numpy's demand for unambiguous equality operator
+        #wish I could use ItemsEqual but I believe it has a problem even though it is supposed to have a non-hashable code path
+        for (image_actual, mask_actual, value_actual), (image_spec, mask_spec, value_spec) in zip(items, items_spec):
+            self.assertTrue(np.all(image_actual == image_spec))
+            self.assertTrue(np.all(mask_actual == mask_spec))
+            self.assertEqual(value_actual, value_spec)
+
 
 
 #__unicode__
@@ -331,8 +383,3 @@ class ImageDict_Implements_Container_copy(ut.TestCase):
 #todo: specify a get_with_confirmation_image  (same as get but returns tuple of value and image)
 
 
-#todo: override update
-#D.update(E, **F) -> None. Update D from dict/iterable E and F.
-#If E has a .keys() method, does: for k in E: D[k] = E[k]
-#If E lacks .keys() method, does: for (k, v) in E: D[k] = v
-#In either case, this is followed by: for k in F: D[k] = F[k]
