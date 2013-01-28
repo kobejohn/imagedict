@@ -10,6 +10,11 @@ from imagedict import ImageDict
 _this_path = path.abspath(path.split(__file__)[0])
 
 
+#todo: specify init to allow input similar to update. maybe just calls update
+#todo: update() not completely functional due to ** problem
+#todo: get with confirmation image not working
+
+
 class User_Sets_A_New_Item(ut.TestCase):
     def test_setting_a_new_image_creates_a_new_item(self):
         obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
@@ -433,9 +438,3 @@ class ImageDict_Has_Basic_String_Representations(ut.TestCase):
     def test_repr_is_simply_unicode_with_class_name_header(self):
         repr_spec = u'{}\n{}'.format(u"<class 'imagedict.ImageDict'>", unicode(self.d))
         self.assertEqual(repr(self.d), repr_spec)
-
-
-
-
-#todo: need init to allow input similar to update. maybe just calls update
-
