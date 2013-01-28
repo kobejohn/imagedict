@@ -52,8 +52,16 @@ class ImageDict(object):
         except KeyError:
             self._keypackages.append(new_keypackage)
 
-    def get(self, key, d = None):
-        """Get the value for the given key or provide the default value."""
+    def get(self, key, d = None, return_confirmation = False):
+        """Get the value for the given key or provide the default value.
+
+        return_confirmation: True/False to indicated if a special confirmation
+            image should be returned with the value as (value, image)
+        """
+        #special confirmation path
+        if return_confirmation:
+            raise NotImplementedError #todo: maybe later if it's needed
+        #standard get path
         try:
             return self.__getitem__(key)
         except KeyError:

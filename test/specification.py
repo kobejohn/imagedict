@@ -126,6 +126,20 @@ class User_Looks_Up_A_Value(ut.TestCase):
         self.assertRaises(ValueError, d.__getitem__, (lookup, bad_mask))
 
 
+@ut.skip #todo: wasn't as easy as I thought so do this if needed
+class User_Gets_A_Manual_Confirmation_Image_Together_With_Value(ut.TestCase):
+    def test_user_gets_a_confirmation_image_with_value(self):
+        d = ImageDict()
+        obj = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        lookup = cv2.imread(path.join(_this_path, 'data', 'lookup.png'))
+        value_spec = 1
+        d[obj] = value_spec
+        value, confirmation_image = d.get(lookup, return_confirmation = True)
+        self.assertEqual(value, value_spec)
+        self.assertTrue(hasattr(confirmation_image, 'shape'), 'Looks like the confirmation image is not a cv numpy image.')
+        self.assertTrue(hasattr(confirmation_image, 'dtype'), 'Looks like the confirmation image is not a cv numpy image.')
+
+
 class User_Deletes_An_Item(ut.TestCase):
     def test_user_deletes_an_existing_item_by_providing_the_same_image_and_mask(self):
         d = ImageDict()
@@ -380,6 +394,5 @@ class ImageDict_Implements_Container_update(ut.TestCase):
 #__str__
 #__repr__
 
-#todo: specify a get_with_confirmation_image  (same as get but returns tuple of value and image)
 
 
