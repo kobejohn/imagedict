@@ -362,6 +362,8 @@ class ImageDict(object):
             image, mask = key #this breaks if image is a 2-row, 1-column image...
         except ValueError:
             image, mask = key, None
+        except TypeError:
+            raise TypeError('The index does not seem valid. Please use either a cv numpy image or an image, mask pair.')
         return image, mask
 
     def _validate_image_and_mask(self, image, mask):
