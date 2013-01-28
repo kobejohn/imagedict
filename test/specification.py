@@ -389,10 +389,53 @@ class ImageDict_Implements_Container_update(ut.TestCase):
             self.assertEqual(value_actual, value_spec)
 
 
+class ImageDict_Has_Basic_String_Representations(ut.TestCase):
+    def setUp(self):
+        self.obj1 = cv2.imread(path.join(_this_path, 'data', 'object.png'))
+        self.mask1 = cv2.imread(path.join(_this_path, 'data', 'object_mask.png'))
+        self.value1 = 1
+        self.obj2 = cv2.imread(path.join(_this_path, 'data', 'different_object.png'))
+        self.mask2 = None
+        self.value2 = 2
+        self.d = ImageDict()
+        self.d[self.obj1, self.mask1] = self.value1
+        self.d[self.obj2, self.mask2] = self.value2
 
-#__unicode__
-#__str__
-#__repr__
+    def test_unicode_shows_image_shape_for_each_key(self):
+        shape1_spec = u'shape: ' + unicode(self.obj1.shape)
+        shape2_spec = u'shape: ' + unicode(self.obj2.shape)
+        self.assertEqual(unicode(self.d).count(shape1_spec), 1)
+        self.assertEqual(unicode(self.d).count(shape2_spec), 1)
+
+    def test_unicode_shows_count_of_masked_pixels_for_each_key(self):
+        masked1_count = self.mask1.size -\
+                        sum(1 for x in self.mask1.flat if x==0)
+        masked2_count = 0
+        masked1_spec = u'masked pixels: ' + unicode(masked1_count)
+        masked2_spec = u'masked pixels: ' + unicode(masked2_count)
+        self.assertEqual(unicode(self.d).count(masked1_spec), 1)
+        self.assertEqual(unicode(self.d).count(masked2_spec), 1)
+
+    def test_unicode_shows_count_of_keypoints_for_each_key(self):
+        keypoints1_spec = u'keypoints: ' + unicode(len(self.d._keypackages[0].fingerprint.descriptors))
+        keypoints2_spec = u'keypoints: ' + unicode(len(self.d._keypackages[1].fingerprint.descriptors))
+        self.assertEqual(unicode(self.d).count(keypoints1_spec), 1)
+        self.assertEqual(unicode(self.d).count(keypoints2_spec), 1)
+
+    def test_unicode_shows_value_for_each_key(self):
+        self.assertEqual(unicode(self.d).count(u'value: ' + unicode(self.value1)), 1)
+        self.assertEqual(unicode(self.d).count(u'value: ' + unicode(self.value2)), 1)
+
+    def test_str_is_simply_encoded_unicode(self):
+        encoded_str_spec = unicode(self.d).encode('utf-8')
+        self.assertEqual(str(self.d), encoded_str_spec)
+
+    def test_repr_is_simply_unicode_with_class_name_header(self):
+        repr_spec = u'{}\n{}'.format(u"<class 'imagedict.ImageDict'>", unicode(self.d))
+        self.assertEqual(repr(self.d), repr_spec)
 
 
+
+
+#todo: need init to allow input similar to update. maybe just calls update
 

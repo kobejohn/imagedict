@@ -259,6 +259,30 @@ class ImageDict(object):
         for k in F:
             self[k] = F[k]
 
+    def __unicode__(self):
+        indent = u'    '
+        item_string_list = list()
+        for kp in self._keypackages:
+            line_list = list()
+            line_list.append(indent + u'shape: ' + unicode(kp.image.shape))
+            if kp.mask is None:
+                masked_pixels_count = 0
+            else:
+                masked_pixels_count = kp.mask.size -\
+                                      sum(1 for p in kp.mask.flat if p==0)
+            line_list.append(indent + u'masked pixels: ' + unicode(masked_pixels_count))
+            line_list.append(indent + u'keypoints: ' + unicode(len(kp.fingerprint.descriptors)))
+            line_list.append(indent + u'value: ' + unicode(kp.value))
+            item_string_list.append('\n'.join(line_list))
+        content_string = '----------------\n'.join(item_string_list)
+        return u'{{\n{}\n}}'.format(content_string)
+
+    def __str__(self):
+        return self.__unicode__().encode('utf-8')
+
+    def __repr__(self):
+        return u'{}\n{}'.format(unicode(self.__class__), self.__unicode__())
+
     def _index_of_key_in_keypackages(self, image, mask):
         """Find the index of the validated key or raise KeyError if not found."""
         for i, kp in enumerate(self._keypackages):
