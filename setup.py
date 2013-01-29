@@ -1,4 +1,5 @@
-from distutils.core import setup
+#from distutils.core import setup
+from setuptools import setup #seems required to make install_requires work
 
 setup(
     name = 'imagedict',
