@@ -5,8 +5,11 @@ Quick Usage
     #some extra imports just for loading an image
     from StringIO import StringIO
     import urllib2
-    import cv2
     import numpy
+    try:
+        import cv2
+    except ImportError:
+        from imagedict import cv2 #windows binary included in distribution
 
     from imagedict import ImageDict
 

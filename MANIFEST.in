@@ -2,4 +2,7 @@ include LICENSE
 include imagedict.py
 include setup.py
 include readme.rst
-recursive-include test *.py *.png
+include test specification.py
+include test/data/*.png
+include _opencv_fallback/cv2.pyd
+include _opencv_fallback/__init__.py
