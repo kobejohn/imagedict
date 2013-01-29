@@ -14,8 +14,10 @@ try:
     import cv2
 except ImportError:
     message = 'Please install opencv >= 2.4.3 manually from http://sourceforge.net/projects/opencvlibrary/'
-    message += '\nThen add the opencv/build/Python/2.x path to your system path'
-    raise ImportError(message)
+    message += '\nThen add the opencv/build/Python/2.x path to a .pth file in your site_packages directory.'
+    message += '\nIn the meantime, trying to use the fallback cv2.pyd included with the distribution.'
+    print message
+    from _opencv_fallback import cv2
 try:
     import numpy as np
 except ImportError:
