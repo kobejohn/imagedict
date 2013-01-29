@@ -1,7 +1,10 @@
 import unittest as ut
 from os import path
 
-import cv2
+try:
+    import cv2
+except ImportError:
+    from _opencv_fallback import cv2
 import numpy as np
 
 from imagedict import ImageDict
