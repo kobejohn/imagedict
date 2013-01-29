@@ -270,11 +270,16 @@ class ImageDict(object):
             else:
                 masked_pixels_count = kp.mask.size -\
                                       sum(1 for p in kp.mask.flat if p==0)
-            line_list.append(indent + u'masked pixels: ' + unicode(masked_pixels_count))
+                try:
+                    channels = kp.mask.shape[2]
+                except IndexError:
+                    channels = 1
+                masked_pixels_count = masked_pixels_count / channels
+            line_list.append(indent + u'approximate masked pixels: ' + unicode(masked_pixels_count))
             line_list.append(indent + u'keypoints: ' + unicode(len(kp.fingerprint.descriptors)))
             line_list.append(indent + u'value: ' + unicode(kp.value))
             item_string_list.append('\n'.join(line_list))
-        content_string = '----------------\n'.join(item_string_list)
+        content_string = '\n----------------\n'.join(item_string_list)
         return u'{{\n{}\n}}'.format(content_string)
 
     def __str__(self):

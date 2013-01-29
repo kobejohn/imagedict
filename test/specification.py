@@ -415,9 +415,10 @@ class ImageDict_Has_Basic_String_Representations(ut.TestCase):
     def test_unicode_shows_count_of_masked_pixels_for_each_key(self):
         masked1_count = self.mask1.size -\
                         sum(1 for x in self.mask1.flat if x==0)
+        masked1_count = masked1_count / self.mask1.shape[2]
         masked2_count = 0
-        masked1_spec = u'masked pixels: ' + unicode(masked1_count)
-        masked2_spec = u'masked pixels: ' + unicode(masked2_count)
+        masked1_spec = u'approximate masked pixels: ' + unicode(masked1_count)
+        masked2_spec = u'approximate masked pixels: ' + unicode(masked2_count)
         self.assertEqual(unicode(self.d).count(masked1_spec), 1)
         self.assertEqual(unicode(self.d).count(masked2_spec), 1)
 
