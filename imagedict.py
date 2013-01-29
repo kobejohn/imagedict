@@ -10,8 +10,18 @@ Emulates the basic behavior of a dict but with images as keys.
 """
 from collections import namedtuple
 
-import cv2
-import numpy as np
+try:
+    import cv2
+except ImportError:
+    message = 'Please install opencv >= 2.4.3 manually from http://sourceforge.net/projects/opencvlibrary/'
+    message += '\nThen add the opencv/build/Python/2.x path to your system path'
+    raise ImportError(message)
+try:
+    import numpy as np
+except ImportError:
+    message = 'It looks like setup was not able to compile and/or install numpy.'
+    message += '\nPlease install numpy. See this if you have problems on windows: http://stackoverflow.com/a/6753898/377366'
+    raise ImportError(message)
 
 
 class ImageDict(object):
