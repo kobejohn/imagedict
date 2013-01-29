@@ -1,0 +1,5 @@
+include LICENSE
+include imagedict.py
+include setup.py
+include readme.rst
+recursive-include test *.py *.png
